@@ -12,8 +12,17 @@ app.use(morgan("dev"));
 
 app.get("/", (req, res) => {
     res.json({
-        message: 'Hello World!'
+      name: "Task API",
+      version: "1.0",
+      endpoints: ["/tasks"]
     });
-});
+  });
+  
+  // Health endpoint
+  app.get("/health", (req, res) => {
+    res.json({
+      status: "ok"
+    });
+  });
 
 module.exports = app;
