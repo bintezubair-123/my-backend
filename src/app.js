@@ -61,5 +61,35 @@ app.get("/tasks/:id", (req, res) => {
 
   res.json(task);
 });
+// POST create a new task
+app.post("/tasks", (req, res) => {
+  const { title } = req.body;
+
+  // Validate input
+  if (!title || title.trim() === "") {
+    return res.status(400).json({
+      error: "Title is required",
+    });
+  }
+
+  // Generate the next ID
+  const nextId =
+    tasks.length > 0
+      ? Math.max(...tasks.map(task => task.id)) + 1
+      : 1;
+
+  // Create the new task
+  const newTask = {
+    id: nextId,
+    title: title.trim(),
+    done: false,
+  };
+
+  // Save it in the in-memory array
+  tasks.push(newTask);
+
+  // Return the created task
+  res.status(201).json(newTask);
+});
 
 module.exports = app;
