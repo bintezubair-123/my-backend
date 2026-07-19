@@ -10,6 +10,25 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(morgan("dev"));
 
+
+const tasks = [
+  {
+    id: 1,
+    title: "Learn Express",
+    done: false,
+  },
+  {
+    id: 2,
+    title: "Build Task API",
+    done: true,
+  },
+  {
+    id: 3,
+    title: "Test with curl",
+    done: false,
+  },
+];
+
 app.get("/", (req, res) => {
     res.json({
       name: "Task API",
@@ -24,5 +43,23 @@ app.get("/", (req, res) => {
       status: "ok"
     });
   });
+  app.get("/tasks", (req, res) => {
+  res.json(tasks);
+});
+
+// GET task by ID
+app.get("/tasks/:id", (req, res) => {
+  const id = Number(req.params.id);
+
+  const task = tasks.find((t) => t.id === id);
+
+  if (!task) {
+    return res.status(404).json({
+      error: `Task ${id} not found`,
+    });
+  }
+
+  res.json(task);
+});
 
 module.exports = app;
