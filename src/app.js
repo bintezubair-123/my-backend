@@ -78,18 +78,76 @@ app.post("/tasks", (req, res) => {
       ? Math.max(...tasks.map(task => task.id)) + 1
       : 1;
 
-  // Create the new task
+  
   const newTask = {
     id: nextId,
     title: title.trim(),
     done: false,
   };
 
-  // Save it in the in-memory array
+
   tasks.push(newTask);
 
-  // Return the created task
+
   res.status(201).json(newTask);
+});
+
+// Update a task
+app.put("/tasks/:id", (req, res) => {
+  const id = Number(req.params.id);
+
+  const task = tasks.find((t) => t.id === id);
+
+  // Task not found
+  if (!task) {
+    return res.status(404).json({
+      error: `Task ${id} not found`,
+    });
+  }
+
+  const { title, done } = req.body;
+
+  // Validate request body
+  if (
+    (title === undefined && done === undefined) ||
+    (title !== undefined && title.trim() === "") ||
+    (done !== undefined && typeof done !== "boolean")
+  ) {
+    return res.status(400).json({
+      error: "Invalid request body",
+    });
+  }
+
+  // Update fields if provided
+  if (title !== undefined) {
+    task.title = title.trim();
+  }
+
+  if (done !== undefined) {
+    task.done = done;
+  }
+
+  res.json(task);
+});
+
+// Delete a task
+app.delete("/tasks/:id", (req, res) => {
+  const id = Number(req.params.id);
+
+  const index = tasks.findIndex((t) => t.id === id);
+
+  // Task not found
+  if (index === -1) {
+    return res.status(404).json({
+      error: `Task ${id} not found`,
+    });
+  }
+
+  // Remove task
+  tasks.splice(index, 1);
+
+  // 204 No Content
+  res.status(204).send();
 });
 
 module.exports = app;
